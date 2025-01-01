@@ -84,7 +84,10 @@ const Navbar = () => {
           <ul className="menu menu-horizontal px-1">{links}</ul>
         </div>
         <div className="navbar-end gap-2">
-          <button className=" font-semibold">SignOut</button>
+          {/* <button className=" font-semibold">SignOut</button> */}
+          <NavLink className="btn btn-sm btn-ghost" to="/login">
+            Login
+          </NavLink>
           <button className=" btn btn-sm btn-circle ">
             <MdAccountCircle className="text-3xl" />
           </button>
