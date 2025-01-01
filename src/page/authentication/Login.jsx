@@ -2,15 +2,40 @@ import loginImg from "/others/authentication2.png";
 import loginBg from "/others/authentication.png";
 import { Link } from "react-router-dom";
 import { FaFacebookF, FaGithub, FaGoogle } from "react-icons/fa";
+import {
+  loadCaptchaEnginge,
+  LoadCanvasTemplate,
+  validateCaptcha,
+} from "react-simple-captcha";
+import { useContext, useEffect, useRef, useState } from "react";
+import { AuthContext } from "../../context/AuthProvider";
 
 export const Login = () => {
+  const captchaRef = useRef(null);
+  const [disabled, setDisabled] = useState(true);
+  const { loginUser, googleSignIn } = useContext(AuthContext);
+
+  useEffect(() => {
+    loadCaptchaEnginge(6);
+  }, []);
+
   const handleLogin = (e) => {
     e.preventDefault();
     const form = e.target;
     const email = form.email.value;
     const password = form.password.value;
-    const info = { email, password };
-    console.log(info);
+    loginUser(email, password).then((res) => {
+      const user = res.user;
+      console.log(user);
+      alert("congrates");
+    });
+  };
+
+  const handleValidateCaptcha = () => {
+    const value = captchaRef.current.value;
+    if (validateCaptcha(value)) {
+      setDisabled(false);
+    }
   };
   return (
     <>
@@ -55,8 +80,30 @@ export const Login = () => {
                   </Link>
                 </label>
               </div>
+              <div className="form-control relative">
+                <label className="label">
+                  <LoadCanvasTemplate />
+                </label>
+                <input
+                  ref={captchaRef}
+                  type="text"
+                  name="captcha"
+                  placeholder="type captcha"
+                  className="input bg-white "
+                  required
+                />
+                <button
+                  onClick={handleValidateCaptcha}
+                  className="btn btn-xs  absolute right-2 bottom-3"
+                >
+                  Validate
+                </button>
+              </div>
               <div className="form-control">
-                <button className="btn bg-[#dbb984] border-none text-white">
+                <button
+                  disabled={disabled}
+                  className="btn bg-[#dbb984] border-none text-black hover:text-white"
+                >
                   Sign In
                 </button>
               </div>
@@ -70,7 +117,10 @@ export const Login = () => {
                 <button className=" border border-black btn-ghost btn-circle flex justify-center items-center">
                   <FaFacebookF className=" text-xl" />
                 </button>
-                <button className=" border border-black btn-ghost btn-circle flex justify-center items-center">
+                <button
+                  onClick={googleSignIn}
+                  className=" border border-black btn-ghost btn-circle flex justify-center items-center"
+                >
                   <FaGoogle className=" text-xl" />
                 </button>
                 <button className=" border border-black btn-ghost btn-circle flex justify-center items-center">
