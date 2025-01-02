@@ -1,6 +1,6 @@
 import loginImg from "/others/authentication2.png";
 import loginBg from "/others/authentication.png";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaFacebookF, FaGithub, FaGoogle } from "react-icons/fa";
 import {
   loadCaptchaEnginge,
@@ -11,14 +11,14 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../../context/AuthProvider";
 import { Helmet } from "react-helmet-async";
 import Swal from "sweetalert2";
-import { use } from "react";
 
 export const Login = () => {
   const captchaRef = useRef(null);
   const [disabled, setDisabled] = useState(true);
   const { loginUser, googleSignIn } = useContext(AuthContext);
   const navigate = useNavigate();
-
+  const location = useLocation();
+  const from = location?.state?.from?.pathName || "/";
   useEffect(() => {
     loadCaptchaEnginge(6);
   }, []);
@@ -37,7 +37,7 @@ export const Login = () => {
         text: `${user?.displayName} successfully logged in`,
         icon: "success",
       });
-      navigate("/");
+      navigate(from, { replace: true });
     });
   };
 

@@ -3,12 +3,14 @@ import loginBg from "/others/authentication.png";
 import { FaFacebookF, FaGithub, FaGoogle } from "react-icons/fa";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthProvider";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
+import Swal from "sweetalert2";
 
 const Register = () => {
-  const { googleSignIn, createUser } = useContext(AuthContext);
+  const { googleSignIn, createUser, updateUserProfile } =
+    useContext(AuthContext);
   // const handleSubmit = (e) => {
   //   e.preventDefault();
   //   const form = e.target;
@@ -24,14 +26,28 @@ const Register = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm();
 
+  const navigate = useNavigate();
   const onSubmit = (data) => {
     console.log(data);
     createUser(data?.email, data?.password).then((res) => {
       const loggedUser = res.user;
-      console.log(loggedUser);
+      // console.log(loggedUser);
+      updateUserProfile(data?.name, data?.photo)
+        .then((res) => {
+          Swal.fire({
+            text: `${data?.name} successfully created an acoount`,
+            icon: "success",
+          });
+          reset();
+          navigate("/");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     });
   };
 
@@ -66,6 +82,23 @@ const Register = () => {
                 {errors.name && (
                   <span className=" text-red-500 mt-1">
                     This field is required
+                  </span>
+                )}
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="text-black">Photo URL</span>
+                </label>
+                <input
+                  type="url"
+                  name="photo"
+                  {...register("photo", { required: true })}
+                  placeholder="photoUrl"
+                  className="input bg-white"
+                />
+                {errors.photo && (
+                  <span className=" text-red-500 mt-1">
+                    Photo url is required
                   </span>
                 )}
               </div>
