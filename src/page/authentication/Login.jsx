@@ -1,6 +1,6 @@
 import loginImg from "/others/authentication2.png";
 import loginBg from "/others/authentication.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaFacebookF, FaGithub, FaGoogle } from "react-icons/fa";
 import {
   loadCaptchaEnginge,
@@ -9,11 +9,15 @@ import {
 } from "react-simple-captcha";
 import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../../context/AuthProvider";
+import { Helmet } from "react-helmet-async";
+import Swal from "sweetalert2";
+import { use } from "react";
 
 export const Login = () => {
   const captchaRef = useRef(null);
   const [disabled, setDisabled] = useState(true);
   const { loginUser, googleSignIn } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadCaptchaEnginge(6);
@@ -26,8 +30,14 @@ export const Login = () => {
     const password = form.password.value;
     loginUser(email, password).then((res) => {
       const user = res.user;
-      console.log(user);
-      alert("congrates");
+
+      console.log(user?.displayName);
+
+      Swal.fire({
+        text: `${user?.displayName} successfully logged in`,
+        icon: "success",
+      });
+      navigate("/");
     });
   };
 
@@ -39,6 +49,9 @@ export const Login = () => {
   };
   return (
     <>
+      <Helmet>
+        <title>TasteBud || Login</title>
+      </Helmet>
       <div
         className="h-screen flex items-center justify-center"
         style={{
@@ -100,12 +113,12 @@ export const Login = () => {
                 </button>
               </div>
               <div className="form-control">
-                <button
-                  disabled={disabled}
+                <input
+                  type="submit"
                   className="btn bg-[#dbb984] border-none text-black hover:text-white"
-                >
-                  Sign In
-                </button>
+                  disabled={disabled}
+                  value="Sign In"
+                />
               </div>
             </form>
             <div className="text-center text-black space-y-3">

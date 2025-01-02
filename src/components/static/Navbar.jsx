@@ -1,8 +1,36 @@
-import React from "react";
+import React, { useContext } from "react";
 import { MdAccountCircle } from "react-icons/md";
 import { Link, NavLink } from "react-router-dom";
+import { AuthContext } from "../../context/AuthProvider";
+import Swal from "sweetalert2";
 
 const Navbar = () => {
+  const { user, logoutUser } = useContext(AuthContext);
+  const handleLoggedOut = () => {
+    logoutUser()
+      .then((res) => {
+        Swal.fire({
+          title: "you have successfully logged out",
+          showClass: {
+            popup: `
+              animate__animated
+              animate__fadeInUp
+              animate__faster
+            `,
+          },
+          hideClass: {
+            popup: `
+              animate__animated
+              animate__fadeOutDown
+              animate__faster
+            `,
+          },
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   const links = (
     <>
       <li>
@@ -85,9 +113,15 @@ const Navbar = () => {
         </div>
         <div className="navbar-end gap-2">
           {/* <button className=" font-semibold">SignOut</button> */}
-          <NavLink className="btn btn-sm btn-ghost" to="/login">
-            Login
-          </NavLink>
+          {user ? (
+            <button onClick={handleLoggedOut} className="btn btn-sm">
+              Log Out
+            </button>
+          ) : (
+            <NavLink className="btn btn-sm btn-ghost" to="/login">
+              Login
+            </NavLink>
+          )}
           <button className=" btn btn-sm btn-circle ">
             <MdAccountCircle className="text-3xl" />
           </button>

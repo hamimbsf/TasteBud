@@ -4,22 +4,42 @@ import { FaFacebookF, FaGithub, FaGoogle } from "react-icons/fa";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthProvider";
 import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { Helmet } from "react-helmet-async";
 
 const Register = () => {
   const { googleSignIn, createUser } = useContext(AuthContext);
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const form = e.target;
-    const name = form.name.value;
-    const email = form.email.value;
-    const password = form.password.value;
-    createUser(email, password).then((res) => {
-      const user = res.user;
-      console.log(user);
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   const form = e.target;
+  //   const name = form.name.value;
+  //   const email = form.email.value;
+  //   const password = form.password.value;
+  //   createUser(email, password).then((res) => {
+  //     const user = res.user;
+  //     console.log(user);
+  //   });
+  // };
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = (data) => {
+    console.log(data);
+    createUser(data?.email, data?.password).then((res) => {
+      const loggedUser = res.user;
+      console.log(loggedUser);
     });
   };
+
   return (
     <>
+      <Helmet>
+        <title>TasteBud || Sign Up</title>
+      </Helmet>
       <div
         className="h-screen flex items-center justify-center"
         style={{
@@ -31,7 +51,7 @@ const Register = () => {
             <img src={loginImg} alt="" />
           </div>
           <div className="card w-full max-w-md shrink-0">
-            <form onSubmit={handleSubmit} className="card-body ">
+            <form onSubmit={handleSubmit(onSubmit)} className="card-body ">
               <div className="form-control">
                 <label className="label">
                   <span className="text-black">Name</span>
@@ -39,10 +59,15 @@ const Register = () => {
                 <input
                   type="text"
                   name="name"
+                  {...register("name", { required: true })}
                   placeholder="name"
                   className="input bg-white"
-                  required
                 />
+                {errors.name && (
+                  <span className=" text-red-500 mt-1">
+                    This field is required
+                  </span>
+                )}
               </div>
               <div className="form-control">
                 <label className="label">
@@ -50,11 +75,16 @@ const Register = () => {
                 </label>
                 <input
                   type="email"
+                  {...register("email", { required: true })}
                   name="email"
                   placeholder="email"
                   className="input bg-white"
-                  required
                 />
+                {errors.email && (
+                  <span className=" text-red-500 mt-1">
+                    This field is required
+                  </span>
+                )}
               </div>
               <div className="form-control">
                 <label className="label">
@@ -63,16 +93,39 @@ const Register = () => {
                 <input
                   type="password"
                   name="password"
+                  {...register("password", {
+                    required: true,
+                    minLength: 6,
+                    pattern:
+                      /(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{6,}/,
+                  })}
                   placeholder="password"
                   className="input bg-white"
-                  required
                 />
+                {errors.password?.type === "required" && (
+                  <span className=" text-red-500 mt-1">
+                    password is required
+                  </span>
+                )}
+                {errors.password?.type === "minLength" && (
+                  <span className=" text-red-500 mt-1">
+                    Password must be at least 6 characters long
+                  </span>
+                )}
+                {errors.password?.type === "pattern" && (
+                  <span className=" text-red-500 mt-1">
+                    Password must be at least one uppercase,one lowercase,one
+                    number & one special char
+                  </span>
+                )}
               </div>
 
               <div className="form-control">
-                <button className="btn bg-[#dbb984] border-none mt-4 text-black hover:text-white">
-                  Sign Up
-                </button>
+                <input
+                  type="submit"
+                  value="Sign Up"
+                  className="btn bg-[#dbb984] border-none mt-4 text-black hover:text-white"
+                />
               </div>
             </form>
             <div className="text-center text-black space-y-3">
