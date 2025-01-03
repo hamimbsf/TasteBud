@@ -18,7 +18,9 @@ export const Login = () => {
   const { loginUser, googleSignIn } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location?.state?.from?.pathName || "/";
+  const from = location.state?.from?.pathname || "/";
+  console.log(location.state);
+
   useEffect(() => {
     loadCaptchaEnginge(6);
   }, []);
@@ -103,7 +105,6 @@ export const Login = () => {
                   name="captcha"
                   placeholder="type captcha"
                   className="input bg-white "
-                  required
                 />
                 <button
                   onClick={handleValidateCaptcha}
@@ -116,7 +117,7 @@ export const Login = () => {
                 <input
                   type="submit"
                   className="btn bg-[#dbb984] border-none text-black hover:text-white"
-                  disabled={disabled}
+                  disabled={false}
                   value="Sign In"
                 />
               </div>
